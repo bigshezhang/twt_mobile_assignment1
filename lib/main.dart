@@ -1,16 +1,23 @@
+import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:twt_mobile_assignment1/things_you_do_not_need_understand/wpy_storage.dart';
 import 'package:twt_mobile_assignment1/you_can_edit_here/post.dart';
 import 'package:twt_mobile_assignment1/you_can_edit_here/post_card.dart';
+import 'package:twt_mobile_assignment1/you_can_edit_here/wpy_service.dart';
+import 'package:twt_mobile_assignment1/things_you_do_not_need_understand/wpy_network.dart';
 
-void main() {
+Future<void>  main() async {
+  WidgetsFlutterBinding.ensureInitialized();  //等待初始化完毕
+  await CommonPreferences.init();
+  await NetStatusListener.init();
   runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+  const MyApp({Key? key}) : super(key: key);    //超类
 
   // This widget is the root of your application.
-  @override
+  @override   //复写
   Widget build(BuildContext context) {
     return MaterialApp(
       title: '一份小作业',
@@ -30,34 +37,46 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int length = 10;
+  int length = 10;    //帖子长度，只展示10个帖子
+  List<Post> postList = [];
 
-  // 这个后面要自己改
-  List<Post> postList = [
-    Post(id: 114514),
-    Post(id: 1919810),
-    Post(id: 123456),
-    Post(id: 111111),
-    Post(id: 121212),
-    Post(id: 100100),
-    Post(id: 114514),
-    Post(id: 114514),
-    Post(id: 114514),
-    Post(id: 114514),
-  ];
+  Future<void> _getPost() async {
+    postList = await FeedbackService.getPosts();
+    setState(() {
+      postList = postList;
+    });
+    for(Post post in postList){
+      if (!post.image_urls.isEmpty){
+        print(post.image_urls.first);
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: Text("迷你微北洋"),
+        actions: <Widget>[
+          TextButton(
+              child: Text(
+                "登录",
+                style: TextStyle(
+                  color: Colors.white
+                ),
+              ),
+              onPressed: () => FeedbackService.getTokenByPassword(onSuccess: () => print("获取到的Token: \n"+CommonPreferences.lakeToken.value),onFailure: print),
+          ),
+          IconButton(
+              onPressed: () => _getPost(),
+              icon: Icon(Icons.refresh)
+          ),
+        ],
+      ),
       body: SafeArea(
         child: ListView(
           children: <Widget>[
-            Text(
-              '\n这就是个示例项目，请打开wpy_service看看吧\n我们最终要实现一个简易版的仅可读的微北洋论坛\n'
-              '你需要完整地写好卡片的ui，并补充好网络请求部分，\n最后以合适的方式实现数据的获取\n'
-              '遇到困难的时候请尽可能前往工作室寻求帮助\n',
-            ),
-            ...List.generate(length, (index) => PostCard(postList[index]))
+            ...List.generate(postList.length == 0 ? 0 : postList.length, (index) => postList.length == 0 ? Text("Nothing") : PostCard(postList[index])),
           ],
         ),
       ),

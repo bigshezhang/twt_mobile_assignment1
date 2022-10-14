@@ -19,10 +19,9 @@ class FeedbackService with AsyncTimer {
   /// 不过在调用之前请在下面填入你的微北洋账号和密码
   static getTokenByPassword({
     required OnSuccess onSuccess,
-    required OnFailure onFailure,
-  }) async {
-    var user = '这里写下你的学号';
-    var passwd = '这里写下你的微北洋密码';
+    required OnFailure onFailure,}) async {
+    var user = '3021202365';
+    var passwd = 'remember1984';
     try {
       // response 就是 dio 库 从服务器获得的数据，我们就可以从里面拿到服务器返回的 token 了
       var response =
@@ -32,6 +31,7 @@ class FeedbackService with AsyncTimer {
         'user': user,
         'password': passwd,
       });
+      print("开始取token");
       // 我们请求到的一串东西（response.data）其实是 json 字符串。
       // 请务必了解 json 是什么再接着看！！！
       // 请务必了解 json 是什么再接着看！！！
@@ -75,9 +75,10 @@ class FeedbackService with AsyncTimer {
   // 请调用这个函数，并查看服务器返回了什么
   // [!] 在调用这个之前请先请求 token！！！
   static getPosts() async {
+    //获取帖子的静态方法
     var response = await feedbackDio.get(
       'posts',
-      queryParameters: {
+      queryParameters: { //请求帖子的参数
         // 里面的参数先这么填，你可以修改一下看看返回是否会不一样
 
         // 这个是返回什么种类的帖子，目前是返回【湖底】部分的帖子
@@ -105,10 +106,18 @@ class FeedbackService with AsyncTimer {
     // 这是一个由 Post 组成的列表，这个函数的目的就是向服务器请求帖子并返回他们，
     // 所以我们将从返回的 json 数据中获取 Post 组成的列表并返回他
     // 但是我们的 Post 是不完整的，请按住 Ctrl 并点击 Post 去完善它
-    List<Post> list = [];
+    List<Post> list = []; //定义一个Post对象类型 List
     for (Map<String, dynamic> json in response.data['data']['list']) {
-      list.add(Post.fromJson(json));
+      list.add(Post.fromJson(json));    //调用了Post类工厂函数fromJson，即不需要实例化'Post()'
     }
-    return list;
+    //for (数据类型 形式参数 in 相同数据类型的数组list){
+    //      相当于遍历了数组里面的每一个元素
+    //      第一次循环是 list[0]
+    //      第二次循环是 list[1]
+    //      第三次循环是 list[2]
+    //
+    // }
+
+    return list;    //将产生的Post对象类型list返回
   }
 }

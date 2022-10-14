@@ -13,10 +13,77 @@ class PostCard extends StatefulWidget {
 class _PostCardState extends State<PostCard> {
   @override
   Widget build(BuildContext context) {
-    return Container(
-        height: 100,
-        width: double.infinity,
-        color: Colors.red,
-        child: Text(widget.post.id.toString()));
+    return Padding(
+      padding: EdgeInsets.all(16),
+      child: Column(
+        children: [
+          Padding(
+            padding: EdgeInsets.only(bottom: 8),
+            child:Row(
+              children: [
+                Expanded(child:
+                Row(
+                  children: [
+                    SizedBox(
+                      height: 30,
+                      width: 30,
+                      child: Image.network("https://qnhdpic.twt.edu.cn/download/origin/" + widget.post.avatar),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.only(left: 8),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            widget.post.nickname,
+                            style: TextStyle(
+                              fontSize: 18
+                            ),
+                          ),
+                          Text(widget.post.created_at.substring(0, 16)),
+                        ],
+                      ),
+                    )
+                  ],
+                ),
+                ),
+                Container(
+                  alignment: Alignment.centerRight,
+                  child: Text(
+                    "#" + widget.post.id.toString(),
+                  ),
+                )
+              ],
+            ),
+          ),
+          Text(
+              widget.post.title,
+            textAlign: TextAlign.left,
+          ),
+          Text(
+            widget.post.content,
+            maxLines: 3,
+          ),
+          Offstage(
+              offstage: widget.post.image_urls.isEmpty,
+              child:
+              SizedBox(
+                height: 100,
+                width: 200,
+                child:
+                Image.network(widget.post.image_urls.isNotEmpty  ? "https://qnhdpic.twt.edu.cn/download/origin/" + widget.post.image_urls.first : ""),
+              )
+          ),
+          Column(
+            children: [
+
+            ],
+          ),
+          Divider(
+            height: 10,
+          )
+        ],
+      ),
+    );
   }
 }
